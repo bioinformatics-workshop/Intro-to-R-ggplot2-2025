@@ -1,0 +1,451 @@
+---
+title: "Intro to data visualization with ggplot2"
+author: Brandon Le
+institute: "Institute for Genome Biology <br> Department of Botany and Plant Sciences"
+title-block-banner: "#41ae76"
+date: October 30, 2025
+format: html
+editor: visual
+execute: 
+  eval: true
+  message: false
+  warning: false
+code-overflow: wrap
+toc: true
+embed-resources: true
+---
+
+In this session, we will work with data visualization using `ggplot2.` Although there are many systems in R for generating graphs, ggplot2 is the most versatile and elegant. We will use examples from the [R Graphics Cookbook](https://r-graphics.org).
+
+> ggplot2 implements the **grammar of graphics**, a coherent system for describing and building graphs. With ggplot2, you can do more faster by learning one system and applying it in many places. [R4DS-Data Visualization](https://r4ds.had.co.nz/data-visualisation.html)
+
+## Resources on ggplot2
+
+-   [The R Graphics Cookbook](http://www.cookbook-r.com/Graphs) by Winston Chang
+-   [Plotting Anything with ggplot2](https://youtu.be/h29g21z0a68) by Thomas Lin Pedersen (webinar)
+-   [R4DS-Data Visualization](https://r4ds.had.co.nz/data-visualisation.html) by Hadley Wickham & Garrett Grolemund
+-   [ggplot2: Elegant Graphics for Data Analysis](https://ggplot2-book.org/) is a more advanced and in-depth assessment of the theoretical underpinnings of ggplot2
+-   [Colorbrewer](https://colorbrewer2.org/) provide good recommendation for color selection
+
+## Basic Syntax
+
+**data**: data to plot\
+**aes**: aesthetic mappings between variables in the data\
+**geom**: layer describing how to render the observations (data)
+
+```{r eval=FALSE}
+ggplot(data = data_file, aes(x = , y = )) + geom_layer
+
+    geom_bar()
+    geom_histogram()
+    geom_density()
+    geom_boxplot()
+    geom_point() # scatter plots
+    geom_pie()
+```
+
+## Layering Plots
+
+We can layer multiple plots on top of each other. For example, if we want to plot histogram and density plots together, we use the '+' sign to add additional plots.
+
+```{r eval=FALSE}
+ggplot(data = data_file, aes(x = , y = )) +
+    geom_histogram() +
+    geom_density()
+```
+
+## Load required libraries
+
+```{r library}
+library(ggplot2)
+library(reshape2) # contains the tips data
+```
+
+## Dataset
+
+We will be working with the `tips` dataset that's part of the `reshape2` package.
+
+The `tips` dataset contains information collected by a waiter about each tip received over a few months. It includes variables such as:
+
+**total_bill:** The total bill amount in dollars. \
+**tip**: The tip amount in dollars. \
+**sex**: Gender of the bill payer (Male/Female). \
+**smoker**: Whether there were smokers in the party (Yes/No). \
+**day**: Day of the week (Thur, Fri, Sat, Sun). \
+**time**: Time of day (Lunch/Dinner). \
+**size**: Number of people in the party.
+
+```{r}
+head(tips)
+```
+
+## Bar Graphs
+
+### Basic bar graph
+
+```{r}
+ggplot(data=tips, aes(x=day)) +
+    geom_bar(stat="count")
+```
+
+### Fill the bars
+
+```{r}
+ggplot(data=tips, aes(x=day, fill = day)) +
+    geom_bar(stat="count")
+```
+
+### Add border color
+
+```{r}
+ggplot(data=tips, aes(x=day, fill=day)) +
+    geom_bar(color="black", stat="count")
+```
+
+### Reorder bars by day of the week
+
+```{r}
+tips$day <- factor(tips$day, levels = c("Thur", "Fri", "Sat", "Sun"))
+
+ggplot(data=tips, aes(x=day, fill=day)) +
+  geom_bar(color="black", stat="count")
+```
+
+### Remove the legend
+
+```{r}
+ggplot(data=tips, aes(x=day, fill=day)) +
+  geom_bar(color="black", stat="count") +
+  
+  guides(fill="none")
+```
+
+### Set colors manually
+
+```{r}
+ggplot(data=tips, aes(x=day, fill=day)) +
+  geom_bar(color="black", stat="count")+ 
+  guides(fill="none") +
+  
+  scale_fill_manual(values = c(
+    "Thur" = "#fef0d9",
+    "Fri" = "#fdcc8a",
+    "Sat" = "#fc8d59",
+    "Sun" = "#d7301f"
+  ))
+```
+
+### Labels
+
+```{r}
+ggplot(data=tips, aes(x=day, fill=day)) +
+  geom_bar(color="black", stat="count")+ 
+  guides(fill="none") +
+  scale_fill_manual(values = c(
+    "Thur" = "#fef0d9",
+    "Fri" = "#fdcc8a",
+    "Sat" = "#fc8d59",
+    "Sun" = "#d7301f"
+  )) +
+  
+  labs(title = "Number of Parties Per Day of the Week", 
+       caption = "Source:The tips dataset", subtitle = "A summary") +
+  xlab("Day of the Week") +
+  ylab("Total Number of Parties")
+```
+
+## Stacked Bar Graphs
+
+### Basic stacked bar graph
+
+```{r}
+ggplot(data=tips, aes(x=day, y= total_bill, fill=sex)) +
+  geom_bar(stat="identity", position = position_dodge()) + 
+  scale_fill_manual(values = c(
+    "Female" = "#999999",
+    "Male" = "#E69F00"
+  )) +
+  xlab("Day of the Week") +
+  ylab("Total Bill ($)")
+```
+
+## Distribution plots
+
+### Sample dataset
+
+```{r}
+set.seed(1234)
+dat <- data.frame(cond = factor(rep(c("A","B"), each=200)), 
+                   rating = c(rnorm(200),rnorm(200, mean=.8)))
+# View first few rows
+head(dat)
+```
+
+## Histogram - Single Group
+
+Basic histogram from the vector "rating". Each bin is .5 wide.
+
+```{r}
+ggplot(dat, aes(x=rating)) + 
+  geom_histogram(binwidth = 0.5)
+```
+
+### Border and fill colors
+
+Border color = "white"\
+Fill color = "black"
+
+```{r}
+ggplot(dat, aes(x=rating)) +
+    geom_histogram(binwidth=.5, colour="white", fill="black")
+```
+
+## Density curve - Single Group
+
+```{r}
+ggplot(dat, aes(x=rating)) + 
+  geom_density(color = "#E69F00", linewidth = 2)
+```
+
+## Histogram & density plot overlay
+
+```{r}
+ggplot(dat, aes(x=rating, y = after_stat(density))) + 
+    geom_histogram(binwidth=.5,
+                   colour="black", fill="white") +
+    geom_density(alpha=0.2, fill="#FF6666")  # Overlay with transparent density plot
+```
+
+## Histogram - Multiple Groups
+
+### Overlaid histograms
+
+```{r}
+ggplot(dat, aes(x=rating, fill=cond)) +
+    geom_histogram(binwidth=.5, alpha=.5, position="identity")
+```
+
+### Interleaved histograms
+
+```{r}
+ggplot(dat, aes(x=rating, fill=cond)) +
+    geom_histogram(binwidth=.5, position="dodge")
+```
+
+## Density curves - Multiple Groups
+
+```{r}
+ggplot(dat, aes(x=rating, colour=cond)) + 
+  geom_density()
+```
+
+## Density curves with transparency
+
+```{r}
+# Density plots with semi-transparent fill
+ggplot(dat, aes(x=rating, fill=cond)) + 
+  geom_density(alpha=.3)
+```
+
+## Empirical cumulative distribution function
+
+### CDF with points
+
+```{r}
+ggplot(dat, aes(rating)) + 
+  stat_ecdf(geom = "point", color = "blue")
+```
+
+### CDF with steps
+
+```{r}
+ggplot(dat, aes(rating)) + 
+  stat_ecdf(geom = "step", color = "red")
+```
+
+### CDF with smoothing
+
+```{r}
+ggplot(dat, aes(rating)) + 
+  stat_ecdf(geom = "smooth", color = "darkgreen")
+```
+
+### Multiple ECDFs based on condition
+
+```{r}
+ggplot(dat, aes(rating, color = cond)) + 
+  stat_ecdf(geom = "point") +
+  scale_color_manual(values = c(
+    "A" = "#E69F00",
+    "B" = "#2166ac"
+  ))
+```
+
+## Box plots
+
+### Basic box plot
+
+```{r}
+# A basic box plot
+ggplot(dat, aes(x=cond, y=rating)) + 
+  geom_boxplot()
+```
+
+### Color by conditions
+
+```{r}
+ggplot(dat, aes(x=cond, y=rating, fill=cond)) + 
+  geom_boxplot()
+```
+
+### Add data points
+
+```{r}
+ggplot(dat, aes(x=cond, y=rating, fill=cond)) + 
+  geom_boxplot() +
+  geom_jitter(width = 0.2, alpha = 0.7, size = 2, color = "darkblue")
+```
+
+### Flip axes
+
+```{r}
+ggplot(dat, aes(x=cond, y=rating, fill=cond)) + 
+  geom_boxplot() + 
+  geom_jitter(width = 0.2, alpha = 0.7, size = 2, color = "darkblue") +
+  
+  guides(fill="none") + 
+  coord_flip()
+```
+
+## Scatterplots
+
+### Sample dataset
+
+```{r}
+set.seed(955)
+# Make some noisily increasing data
+dat2 <- data.frame(cond = rep(c("A", "B"), each=10),
+                  xvar = 1:20 + rnorm(20,sd=3),
+                  yvar = 1:20 + rnorm(20,sd=3))
+head(dat2)
+```
+
+### Basic scatterplot
+
+```{r}
+ggplot(dat2, aes(x=xvar, y=yvar)) +
+    geom_point(shape=5)      # Use hollow circles
+```
+
+### Add regression line
+
+```{r}
+ggplot(dat2, aes(x=xvar, y=yvar)) +
+    geom_point(shape=1) +    # Use hollow circles
+    geom_smooth(method=lm)   # Add linear regression line 
+```
+
+### Regression line without shaded region
+
+```{r}
+ggplot(dat2, aes(x=xvar, y=yvar)) +
+    geom_point(shape=1) +    # Use hollow circles
+    geom_smooth(method=lm,   # Add linear regression line
+                se=FALSE)    # Don't add shaded confidence region
+```
+
+### Loess smoothed fit curve
+
+```{r}
+ggplot(dat2, aes(x=xvar, y=yvar)) +
+    geom_point(shape=1) +    # Use hollow circles
+    geom_smooth()            # Add a loess smoothed fit curve with confidence region
+```
+
+## Facets
+
+Split up your data by one or more variables and plot the subsets of data together.
+
+```{r}
+sp <- ggplot(tips, aes(x=total_bill, y=tip/total_bill)) + 
+  geom_point(shape=1)
+sp
+```
+
+### Divide by Levels Vertically
+
+```{r}
+# Divide by levels of "sex", in the vertical direction
+sp + facet_grid(sex ~ .)
+```
+
+### Divide by Levels Horizontally
+
+```{r}
+# Divide by levels of "sex", in the horizontal direction
+sp + facet_grid(. ~ sex)
+```
+
+### Divide by multiple levels
+
+```{r}
+# Divide with "sex" vertical, "day" horizontal
+sp + facet_grid(sex ~ day)
+```
+
+### Divide by day but split into two columns
+
+```{r}
+# Divide by day, going horizontally and wrapping with 2 columns
+sp + facet_wrap( ~ day, ncol=2)
+```
+
+### Color facets strips
+
+```{r}
+# Divide by day, going horizontally and wrapping with 2 columns
+sp + facet_wrap( ~ day, ncol=2, ) +
+  theme(strip.background = element_rect(fill = "#92c5de"))
+```
+
+## Saving plots
+
+Plots generated using ggplot2 can be saved to file using the `ggsave` function. The function will save, by default, the last plot to file.
+
+```{r eval=FALSE}
+ggsave(plotname, filename, output_parameters)
+
+# For example, this will save the plot "plt" into a 
+# file name "histogram_plot.pdf" as a PDF with 300 dpi at 4in x 4in
+plt <- ggplot(data, aes(ratings)) + geom_hist()
+ggsave(plt, "histogram_plot.pdf", width = 4, height = 4, dpi = 300)
+```
+
+**File formats**: pdf, png, jpeg, tiff, eps, ps, bmp, svg
+
+Alternatively, you can use the baseR method to save the plots (see below).
+
+```{r saving-plots, eval=FALSE, include=TRUE}
+
+# PDFs
+pdf("plots.pdf") #svg
+plot(...)
+plot(...)
+dev.off()
+
+# PNG/TIFF
+png("plot.png") # or tiff("plot.tiff")
+plot(...)
+dev.off()
+
+# resizing plot
+png("plot.png", width=480, height=240, res=120)
+plot(...)
+dev.off()
+```
+
+::: callout-warning
+You must use the `dev.off()` command to tell R that you are finished plotting; otherwise your graph will not show up.
+
+If you generate plots with `ggplot2` in a script or function, you must use the print() command to render the plots.
+:::
