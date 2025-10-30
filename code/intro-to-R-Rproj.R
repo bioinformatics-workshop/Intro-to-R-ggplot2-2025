@@ -153,9 +153,9 @@ my_varıable
 ################################################################################### 
 ## Installing packages in development through GitHub
 ################# DO NOT RUN ######################################################
-install.packages("devtools")          # devtools contain the install_github function
-library(devtools)                     # load devtools library
-install_github("Author/Packagename")  # install from github
+# install.packages("devtools")          # devtools contain the install_github function
+# library(devtools)                     # load devtools library
+# install_github("Author/Packagename")  # install from github
 
 
 
