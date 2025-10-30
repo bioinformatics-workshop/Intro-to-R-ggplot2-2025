@@ -2,7 +2,7 @@
 title: "Introduction to R and ggplot2"
 author: "Brandon Le"
 date-modified: 10-30-2025
-institute: "Brandon Le"
+institute: ""
 code-line-numbers: true
 code-overflow: scroll
 affiliation: "IIGB, University of California, Riverside"
@@ -100,6 +100,21 @@ Once the app is ready, click `Connect to RStudio` to launch the RStudio Server.
 
 ![](images/OnDemand_interactive_app_launch.png)
 
-## RStudio 
+## RStudio
 
 ![](images/RStudio-01.png){.absolute width="1000"}
+
+## Lets Get Started {.smaller}
+
+<br>
+Go to the GitHub repository <https://github.com/bioinformatics-workshop>
+
+Select the workshop [**Intro-to-R-ggplot2-2025**](https://github.com/bioinformatics-workshop/Intro-to-R-ggplot2-2025)
+
+Click on the `<> Code` button and copy the HTTPS URL
+
+In the terminal tab in Rstudio (in the console section), type in `git clone` and paste the URL from github (see below)
+
+`git clone https://github.com/bioinformatics-workshop/Intro-to-R-ggplot2-2025.git`
+
+Now, you should have a clone of the workshop documents with scripts and html files to follow.

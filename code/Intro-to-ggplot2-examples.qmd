@@ -67,12 +67,12 @@ We will be working with the `tips` dataset that's part of the `reshape2` package
 
 The `tips` dataset contains information collected by a waiter about each tip received over a few months. It includes variables such as:
 
-**total_bill:** The total bill amount in dollars. \
-**tip**: The tip amount in dollars. \
-**sex**: Gender of the bill payer (Male/Female). \
-**smoker**: Whether there were smokers in the party (Yes/No). \
-**day**: Day of the week (Thur, Fri, Sat, Sun). \
-**time**: Time of day (Lunch/Dinner). \
+**total_bill:** The total bill amount in dollars.\
+**tip**: The tip amount in dollars.\
+**sex**: Gender of the bill payer (Male/Female).\
+**smoker**: Whether there were smokers in the party (Yes/No).\
+**day**: Day of the week (Thur, Fri, Sat, Sun).\
+**time**: Time of day (Lunch/Dinner).\
 **size**: Number of people in the party.
 
 ```{r}
